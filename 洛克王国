@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes, viewport-fit=cover">
+  <title>洛克王国世界·异色统计仪</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c0 50%, #f0e0cc 100%);
+      min-height: 100vh;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .container {
+      max-width: 950px;
+      width: 100%;
+      background: #faf6f0;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 30px rgba(139, 90, 43, 0.2);
+      padding: 1.5rem;
+      border: 2px solid #d4b896;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 3px solid #c9a87c;
+    }
+    
+    .title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #5c3d2e;
+      letter-spacing: 3px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .subtitle {
+      font-size: 0.9rem;
+      color: #8b6914;
+      margin-top: 0.3rem;
+      font-weight: 500;
+    }
+    
+    /* 精灵选择器 */
+    .sprite-selector {
+      background: linear-gradient(135deg, #fff8f0, #fce8d5);
+      border: 2px solid #d4a76a;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .sprite-selector label {
+      font-weight: 700;
+      color: #5c3d2e;
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+    
+    .sprite-selector select {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.6rem 1rem;
+      border: 2px solid #c9a87c;
+      border-radius: 0.8rem;
+      font-size: 1rem;
+      background: white;
+      color: #4a2c17;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .sprite-selector select:hover {
+      border-color: #8b6914;
+    }
+    
+    /* 目标精灵卡片 */
+    .target-card {
+      background: linear-gradient(135deg, #fff8f0, #fce8d5);
+      border: 2px solid #d4a76a;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 4px 12px rgba(160, 100, 30, 0.15);
+    }
+    
+    .target-image {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(145deg, #ffd700, #ffaa00);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      border: 3px solid #daa520;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    
+    .target-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .target-info {
+      flex: 1;
+    }
+    
+    .target-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #4a2c17;
+      margin-bottom: 0.5rem;
+    }
+    
+    .star-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .star-badge {
+      background: #ffd700;
+      padding: 0.2rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a2800;
+      border: 1px solid #b8860b;
+    }
+    
+    .stats-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-header {
+      background: #d4a76a;
+      color: white;
+      padding: 0.6rem 1rem;
+      border-radius: 0.8rem;
+      margin-bottom: 0.8rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+    
+    .ball-table-container {
+      background: white;
+      border-radius: 0.8rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 1rem;
+    }
+    
+    .ball-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.8rem;
+      background: #f5efe5;
+      border-bottom: 1px solid #d4b896;
+      align-items: center;
+    }
+    
+    .filter-btn {
+      padding: 0.3rem 0.8rem;
+      border: 1px solid #b8860b;
+      background: white;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #5c3d2e;
+      font-weight: 500;
+    }
+    
+    .filter-btn.active {
+      background: #b8860b;
+      color: white;
+      font-weight: 700;
+    }
+    
+    .action-btn {
+      background: #8b6914;
+      color: white;
+      border: none;
+      padding: 0.3rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      white-space: nowrap;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    
+    th {
+      background: #f0e0cc;
+      color: #4a2c17;
+      padding: 0.7rem;
+      font-weight: 700;
+      text-align: center;
+      border-bottom: 2px solid #d4a76a;
+    }
+    
+    td {
+      padding: 0.6rem;
+      text-align: center;
+      border-bottom: 1px solid #e8d5c0;
+    }
+    
+    /* 数量调节器样式 */
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+    }
+    
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #c9a87c;
+      background: #f5efe5;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      color: #5c3d2e;
+      user-select: none;
+    }
+    
+    .qty-btn:hover {
+      background: #d4a76a;
+      color: white;
+      border-color: #8b6914;
+    }
+    
+    .qty-btn:active {
+      transform: scale(0.9);
+    }
+    
+    .qty-input {
+      width: 60px;
+      padding: 0.3rem;
+      border: 2px solid #c9a87c;
+      border-radius: 0.4rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #4a2c17;
+      background: white;
+      transition: border-color 0.2s;
+    }
+    
+    .qty-input:focus {
+      outline: none;
+      border-color: #8b6914;
+      box-shadow: 0 0 5px rgba(139, 105, 20, 0.3);
+    }
+    
+    .total-row {
+      background: #f5e6d3;
+      font-weight: 700;
+    }
+    
+    .reset-btn {
+      background: #8b4513;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0.5rem;
+      transition: all 0.2s;
+    }
+    
+    .reset-btn:hover {
+      background: #6b3410;
+      transform: translateY(-1px);
+    }
+    
+    .fade-box {
+      background: white;
+      border-radius: 0.8rem;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid #d4b896;
+      margin-bottom: 1rem;
+    }
+    
+    .fade-box h3 {
+      color: #5c3d2e;
+      margin-bottom: 0.8rem;
+      font-size: 1rem;
+      text-align: center;
+      border-bottom: 1px solid #d4b896;
+      padding-bottom: 0.5rem;
+    }
+    
+    .fade-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .fade-type-btn {
+      padding: 0.5rem;
+      border: 2px solid #c9a87c;
+      border-radius: 0.5rem;
+      background: #faf6f0;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    
+    .fade-type-btn.selected {
+      background: #b8860b;
+      color: white;
+      border-color: #8b6914;
+    }
+    
+    .custom-input-row {
+      display: flex;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    
+    .custom-input-row input {
+      flex: 1;
+      padding: 0.4rem;
+      border: 1px solid #c9a87c;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .add-record-btn {
+      background: #daa520;
+      color: white;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    
+    .sprite-stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0.6rem;
+      background: #f5efe5;
+      border-radius: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .sprite-stat-item .count {
+      font-weight: 700;
+      color: #b8860b;
+      cursor: pointer;
+      padding: 0.1rem 0.5rem;
+      border-radius: 0.3rem;
+      transition: background 0.2s;
+    }
+    
+    .sprite-stat-item .count:hover {
+      background: #ffe0b2;
+    }
+    
+    .event-log {
+      background: white;
+      border-radius: 0.8rem;
+      padding: 1rem;
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid #d4b896;
+    }
+    
+    .event-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-bottom: 1px solid #e8d5c0;
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .delete-event {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.2rem 0.6rem;
+      border-radius: 0.3rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    
+    .delete-sprite {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.3rem;
+      cursor: pointer;
+      font-size: 0.7rem;
+      margin-left: 0.5rem;
+    }
+    
+    .admin-panel {
+      background: #f5e6d3;
+      border: 2px solid #8b6914;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-top: 1rem;
+      display: none;
+    }
+    
+    .admin-panel h3 {
+      color: #5c3d2e;
+      margin-bottom: 1rem;
+    }
+    
+    .admin-form {
+      display: grid;
+      gap: 0.8rem;
+    }
+    
+    .admin-form label {
+      font-weight: 600;
+      color: #5c3d2e;
+    }
+    
+    .admin-form input, .admin-form select {
+      padding: 0.5rem;
+      border: 1px solid #c9a87c;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .admin-btn {
+      background: #8b4513;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .toggle-admin-btn {
+      background: #6b3410;
+      color: white;
+      border: none;
+      padding: 0.4rem 1.2rem;
+      border-radius: 1rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+    
+    .export-btns {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .export-btn {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    
+    .sprite-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      background: white;
+      border-radius: 0.5rem;
+      margin-bottom: 0.3rem;
+      border: 1px solid #d4b896;
+    }
+    
+    .sprite-list-item .sprite-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .empty-state {
+      text-align: center;
+      color: #999;
+      padding: 1rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="title">洛克王国世界·异色统计仪</div>
+    <div class="subtitle">记录被污染精灵退色结果 | 精灵球消耗 | 乱入污染精灵全追踪</div>
+  </div>
+
+  <!-- 精灵选择器 -->
+  <div class="sprite-selector">
+    <label>🎯 选择目标精灵：</label>
+    <select id="spriteSelect">
+      <option value="">-- 请选择精灵 --</option>
+    </select>
+  </div>
+
+  <!-- 目标精灵卡片 -->
+  <div class="target-card" id="targetCard">
+    <div class="target-image" id="targetImage">🐾</div>
+    <div class="target-info">
+      <div class="target-name" id="targetName">请选择目标精灵</div>
+      <div class="star-values" id="starValues">
+        <span class="star-badge">一阶 ⭐0</span>
+        <span class="star-badge">二阶 ⭐0</span>
+        <span class="star-badge">三阶 ⭐0</span>
+        <span class="star-badge">四阶 ⭐0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 精灵球库存统计 -->
+  <div class="stats-section">
+    <div class="section-header">
+      <span>🔮 精灵球库存统计（刷前/刷后）</span>
+    </div>
+    
+    <div class="ball-filter-bar">
+      <span style="font-weight:600; color:#5c3d2e;">筛选：</span>
+      <div id="ballFilterChips" style="display:flex; flex-wrap:wrap; gap:0.3rem;"></div>
+      <button class="action-btn" id="selectAllBtn">全选</button>
+      <button class="action-btn" id="deselectAllBtn">取消全选</button>
+    </div>
+    
+    <div class="ball-table-container">
+      <table id="ballTable">
+        <thead>
+          <tr>
+            <th>精灵球种类</th>
+            <th>刷新数量</th>
+            <th>刷后数量</th>
+            <th>消耗（刷前-刷后）</th>
+          </tr>
+        </thead>
+        <tbody id="ballTableBody"></tbody>
+        <tfoot id="ballTableFoot"></tfoot>
+      </table>
+    </div>
+    
+    <div style="text-align: center;">
+      <button class="reset-btn" id="resetBallBtn">重置所有库存为0</button>
+    </div>
+  </div>
+
+  <!-- 褪色结果统计 -->
+  <div class="stats-section">
+    <div class="section-header">
+      <span>🎨 主目标·被污染精灵退色结果</span>
+    </div>
+    
+    <div class="fade-box">
+      <h3>主目标精灵</h3>
+      <div class="fade-type-grid">
+        <button class="fade-type-btn selected" data-type="污染">污染精灵</button>
+        <button class="fade-type-btn" data-type="原色">原色精灵</button>
+        <button class="fade-type-btn" data-type="异色">异色精灵</button>
+        <button class="fade-type-btn" data-type="其它">其它精灵</button>
+      </div>
+      
+      <div id="customSpriteInput" style="display:none;">
+        <div class="custom-input-row">
+          <input type="text" id="customSpriteName" placeholder="精灵名称（可自定义）">
+        </div>
+        <div class="custom-input-row">
+          <input type="text" id="customSpriteNote" placeholder="备注（可选）">
+        </div>
+      </div>
+      
+      <button class="add-record-btn" id="addFadeRecordBtn">添加记录</button>
+      
+      <div style="margin-top:1rem;">
+        <div style="font-weight:700; color:#5c3d2e; margin-bottom:0.5rem;">统计：</div>
+        <div id="fadeStats">
+          <div class="sprite-stat-item">污染：<span class="count" id="pollutionCount">0</span></div>
+          <div class="sprite-stat-item">原色：<span class="count" id="normalCount">0</span></div>
+          <div class="sprite-stat-item">异色：<span class="count" id="shinyCount">0</span></div>
+          <div id="otherStats"></div>
+        </div>
+      </div>
+      
+      <button class="reset-btn" id="resetTargetBtn" style="width:100%; margin-top:0.5rem;">重置主目标计数</button>
+    </div>
+    
+    <div class="event-log" id="eventLog">
+      <div style="font-weight:700; color:#5c3d2e; margin-bottom:0.5rem;">事件日志（含备注）</div>
+      <div id="eventList">暂无记录</div>
+      <button class="reset-btn" id="clearEventsBtn" style="width:100%; margin-top:0.5rem;">清空所有记录</button>
+    </div>
+  </div>
+  
+  <div class="export-btns">
+    <button class="export-btn" id="exportBallsBtn">📥 导出精灵球统计</button>
+    <button class="export-btn" id="exportFadeBtn">📥 导出褪色记录</button>
+  </div>
+  
+  <button class="toggle-admin-btn" id="toggleAdminBtn">⚙️ 管理员后台（添加/管理精灵）</button>
+  
+  <div class="admin-panel" id="adminPanel">
+    <h3>📋 管理员后台 - 精灵库管理</h3>
+    
+    <!-- 添加新精灵 -->
+    <div style="background:white; padding:1rem; border-radius:0.8rem; margin-bottom:1rem;">
+      <h4 style="color:#5c3d2e; margin-bottom:0.8rem;">➕ 添加新精灵</h4>
+      <div class="admin-form">
+        <label>精灵名称：</label>
+        <input type="text" id="adminName" placeholder="输入精灵名称">
+        
+        <label>精灵图片（emoji表情或图片URL）：</label>
+        <input type="text" id="adminImage" placeholder="🐉 或 https://example.com/image.png">
+        
+        <label>一阶星光值：</label>
+        <input type="number" id="adminStar1" placeholder="120" min="0" value="120">
+        
+        <label>二阶星光值：</label>
+        <input type="number" id="adminStar2" placeholder="240" min="0" value="240">
+        
+        <label>三阶星光值：</label>
+        <input type="number" id="adminStar3" placeholder="360" min="0" value="360">
+        
+        <label>四阶星光值：</label>
+        <input type="number" id="adminStar4" placeholder="500" min="0" value="500">
+        
+        <button class="admin-btn" id="addSpriteBtn">添加精灵</button>
+      </div>
+    </div>
+    
+    <!-- 精灵列表管理 -->
+    <div style="background:white; padding:1rem; border-radius:0.8rem;">
+      <h4 style="color:#5c3d2e; margin-bottom:0.8rem;">📝 已添加精灵列表</h4>
+      <div id="spriteList">
+        <div class="empty-state">暂无精灵，请添加</div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="text-align:center; margin-top:1rem; color:#8b6914; font-size:0.8rem;">
+    统计原理：手动记录每次被污染精灵退色结果。精灵球消耗=刷前总量-刷后总量
+  </div>
+</div>
+
+<script>
+(function() {
+  const BALL_TYPES = [
+    "普通球", "高级球", "光合球", "网兜球", "调温球", "淘沙球",
+    "绝缘球", "美妙球", "好战球", "暗星球", "变幻球", "补光球",
+    "国王球", "棱镜球", "赛季限定球"
+  ];
+  
+  // ========== 数据存储 ==========
+  let spriteLibrary = [];
+  let currentSpriteId = null;
+  
+  let ballData = {};
+  BALL_TYPES.forEach(ball => {
+    ballData[ball] = { before: 20, after: 20 };
+  });
+  
+  let fadeRecords = {};
+  let eventLog = [];
+  let selectedBalls = [...BALL_TYPES];
+  let currentFadeType = "污染";
+  
+  // ========== 初始化数据 ==========
+  function initData() {
+    const saved = localStorage.getItem('roco_sprite_library');
+    if (saved) {
+      spriteLibrary = JSON.parse(saved);
+    } else {
+      spriteLibrary = [
+        { id: '1', name: '烈焰飞龙', image: '🐉', stars: [120, 240, 360, 500] },
+        { id: '2', name: '水灵', image: '💧', stars: [100, 200, 300, 400] },
+        { id: '3', name: '暗夜伯爵', image: '🦇', stars: [150, 280, 420, 550] }
+      ];
+    }
+    
+    spriteLibrary.forEach(sprite => {
+      if (!fadeRecords[sprite.id]) {
+        fadeRecords[sprite.id] = { pollution: 0, normal: 0, shiny: 0, other: {} };
+      }
+    });
+    
+    const savedBalls = localStorage.getItem('roco_ball_data');
+    if (savedBalls) ballData = JSON.parse(savedBalls);
+    
+    const savedEvents = localStorage.getItem('roco_event_log');
+    if (savedEvents) eventLog = JSON.parse(savedEvents);
+    
+    if (spriteLibrary.length > 0 && !currentSpriteId) {
+      currentSpriteId = spriteLibrary[0].id;
+    }
+  }
+  
+  function saveData() {
+    localStorage.setItem('roco_sprite_library', JSON.stringify(spriteLibrary));
+    localStorage.setItem('roco_ball_data', JSON.stringify(ballData));
+    localStorage.setItem('roco_event_log', JSON.stringify(eventLog));
+  }
+  
+  function getCurrentSprite() {
+    return spriteLibrary.find(s => s.id === currentSpriteId);
+  }
+  
+  function getCurrentFadeData() {
+    if (!currentSpriteId || !fadeRecords[currentSpriteId]) {
+      return { pollution: 0, normal: 0, shiny: 0, other: {} };
+    }
+    return fadeRecords[currentSpriteId];
+  }
+  
+  // ========== DOM元素 ==========
+  const spriteSelect = document.getElementById('spriteSelect');
+  const targetImage = document.getElementById('targetImage');
+  const targetName = document.getElementById('targetName');
+  const starValues = document.getElementById('starValues');
+  const ballFilterChips = document.getElementById('ballFilterChips');
+  const ballTableBody = document.getElementById('ballTableBody');
+  const ballTableFoot = document.getElementById('ballTableFoot');
+  const fadeStats = document.getElementById('fadeStats');
+  const otherStats = document.getElementById('otherStats');
+  const eventList = document.getElementById('eventList');
+  const adminPanel = document.getElementById('adminPanel');
+  const customSpriteInput = document.getElementById('customSpriteInput');
+  const spriteListDiv = document.getElementById('spriteList');
+  
+  // ========== 渲染函数 ==========
+  function renderSpriteSelector() {
+    spriteSelect.innerHTML = '<option value="">-- 请选择精灵 --</option>' +
+      spriteLibrary.map(s => 
+        `<option value="${s.id}" ${s.id === currentSpriteId ? 'selected' : ''}>${s.image} ${s.name}</option>`
+      ).join('');
+  }
+  
+  function renderTarget() {
+    const sprite = getCurrentSprite();
+    if (!sprite) {
+      targetImage.innerHTML = '🐾';
+      targetName.textContent = '请选择目标精灵';
+      starValues.innerHTML = '<span class="star-badge">一阶 ⭐0</span><span class="star-badge">二阶 ⭐0</span><span class="star-badge">三阶 ⭐0</span><span class="star-badge">四阶 ⭐0</span>';
+      return;
+    }
+    
+    if (sprite.image.startsWith('http')) {
+      targetImage.innerHTML = `<img src="${sprite.image}" alt="${sprite.name}">`;
+    } else {
+      targetImage.textContent = sprite.image || '🐾';
+    }
+    
+    targetName.textContent = sprite.name;
+    starValues.innerHTML = sprite.stars.map((star, i) => 
+      `<span class="star-badge">${['一','二','三','四'][i]}阶 ⭐${star}</span>`
+    ).join('');
+  }
+  
+  function renderBallFilters() {
+    ballFilterChips.innerHTML = BALL_TYPES.map(ball => {
+      const active = selectedBalls.includes(ball) ? 'active' : '';
+      return `<span class="filter-btn ${active}" data-ball="${ball}">${ball}</span>`;
+    }).join('');
+    
+    ballFilterChips.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const ball = this.dataset.ball;
+        if (selectedBalls.includes(ball)) {
+          selectedBalls = selectedBalls.filter(b => b !== ball);
+        } else {
+          selectedBalls = [...selectedBalls, ball];
+        }
+        renderBallFilters();
+        renderBallTable();
+      });
+    });
+  }
+  
+  function renderBallTable() {
+    const filtered = BALL_TYPES.filter(b => selectedBalls.includes(b));
+    let totalConsumed = 0;
+    
+    ballTableBody.innerHTML = filtered.map(ball => {
+      const before = ballData[ball].before;
+      const after = ballData[ball].after;
+      const consumed = before - after;
+      totalConsumed += consumed;
+      
+      return `
+        <tr>
+          <td><strong>${ball}</strong></td>
+          <td>
+            <div class="quantity-control">
+              <button class="qty-btn" data-ball="${ball}" data-field="before" data-action="decrease">−</button>
+              <input type="number" class="qty-input" data-ball="${ball}" data-field="before" value="${before}" min="0">
+              <button class="qty-btn" data-ball="${ball}" data-field="before" data-action="increase">+</button>
+            </div>
+          </td>
+          <td>
+            <div class="quantity-control">
+              <button class="qty-btn" data-ball="${ball}" data-field="after" data-action="decrease">−</button>
+              <input type="number" class="qty-input" data-ball="${ball}" data-field="after" value="${after}" min="0">
+              <button class="qty-btn" data-ball="${ball}" data-field="after" data-action="increase">+</button>
+            </div>
+          </td>
+          <td>${consumed}</td>
+        </tr>
+      `;
+    }).join('');
+    
+    ballTableFoot.innerHTML = `
+      <tr class="total-row">
+        <td colspan="3" style="text-align:right;">总消耗球数：</td>
+        <td><strong>${totalConsumed}</strong></td>
+      </tr>
+    `;
+    
+    // 绑定增减按钮事件
+    document.querySelectorAll('.qty-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const ball = this.dataset.ball;
+        const field = this.dataset.field;
+        const action = this.dataset.action;
+        const currentValue = ballData[ball][field];
+        
+        if (action === 'increase') {
+          ballData[ball][field] = currentValue + 1;
+        } else if (action === 'decrease' && currentValue > 0) {
+          ballData[ball][field] = currentValue - 1;
+        }
+        
+        saveData();
+        renderBallTable();
+      });
+    });
+    
+    // 绑定输入框事件
+    document.querySelectorAll('.qty-input').forEach(input => {
+      input.addEventListener('change', function() {
+        const ball = this.dataset.ball;
+        const field = this.dataset.field;
+        let newValue = parseInt(this.value);
+        
+        if (isNaN(newValue) || newValue < 0) {
+          newValue = 0;
+        }
+        
+        ballData[ball][field] = newValue;
+        this.value = newValue;
+        
+        saveData();
+        renderBallTable();
+      });
+      
+      // 防止输入时的问题
+      input.addEventListener('focus', function() {
+        this.select();
+      });
+    });
+  }
+  
+  function renderFadeStats() {
+    const fadeData = getCurrentFadeData();
+    document.getElementById('pollutionCount').textContent = fadeData.pollution;
+    document.getElementById('normalCount').textContent = fadeData.normal;
+    document.getElementById('shinyCount').textContent = fadeData.shiny;
+    
+    otherStats.innerHTML = Object.entries(fadeData.other).map(([name, data]) => 
+      `<div class="sprite-stat-item">${name}：<span class="count" data-other="${name}">${data.count}</span></div>`
+    ).join('');
+    
+    otherStats.querySelectorAll('.count').forEach(span => {
+      span.addEventListener('click', function() {
+        const name = this.dataset.other;
+        const newCount = prompt(`修改 ${name} 的数量：`, fadeData.other[name].count);
+        if (newCount !== null && !isNaN(newCount) && parseInt(newCount) >= 0) {
+          fadeData.other[name].count = parseInt(newCount);
+          saveData();
+          renderFadeStats();
+        }
+      });
+    });
+  }
+  
+  function renderEventLog() {
+    eventList.innerHTML = eventLog.length === 0 ? '<div class="empty-state">暂无记录</div>' : 
+      eventLog.map((event, index) => `
+        <div class="event-item">
+          <span>${event.spriteName || ''} ${event.name} ${event.type}精灵 ${event.note ? '- ' + event.note : ''}</span>
+          <button class="delete-event" data-index="${index}">删除</button>
+        </div>
+      `).join('');
+    
+    eventList.querySelectorAll('.delete-event').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const index = parseInt(this.dataset.index);
+        eventLog.splice(index, 1);
+        saveData();
+        renderEventLog();
+      });
+    });
+  }
+  
+  function renderSpriteList() {
+    spriteListDiv.innerHTML = spriteLibrary.length === 0 ? '<div class="empty-state">暂无精灵，请添加</div>' :
+      spriteLibrary.map(sprite => `
+        <div class="sprite-list-item">
+          <div class="sprite-info">
+            <span style="font-size:1.5rem;">${sprite.image.startsWith('http') ? '🖼️' : sprite.image}</span>
+            <span><strong>${sprite.name}</strong></span>
+            <span style="font-size:0.8rem; color:#8b6914;">⭐${sprite.stars.join('/')}</span>
+          </div>
+          <button class="delete-sprite" data-id="${sprite.id}">删除</button>
+        </div>
+      `).join('');
+    
+    spriteListDiv.querySelectorAll('.delete-sprite').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        if (confirm('确定删除这个精灵吗？相关褪色记录也会删除。')) {
+          deleteSprite(id);
+        }
+      });
+    });
+  }
+  
+  function deleteSprite(id) {
+    spriteLibrary = spriteLibrary.filter(s => s.id !== id);
+    delete fadeRecords[id];
+    
+    if (currentSpriteId === id) {
+      currentSpriteId = spriteLibrary.length > 0 ? spriteLibrary[0].id : null;
+    }
+    
+    saveData();
+    renderAll();
+  }
+  
+  // ========== 事件处理 ==========
+  function addFadeRecord() {
+    if (!currentSpriteId) {
+      alert('请先选择目标精灵');
+      return;
+    }
+    
+    const sprite = getCurrentSprite();
+    const fadeData = getCurrentFadeData();
+    
+    if (currentFadeType === '其它') {
+      const name = document.getElementById('customSpriteName').value.trim();
+      if (!name) {
+        alert('请输入精灵名称');
+        return;
+      }
+      
+      if (!fadeData.other[name]) {
+        fadeData.other[name] = { count: 0, notes: [] };
+      }
+      fadeData.other[name].count++;
+      
+      eventLog.push({
+        spriteName: sprite.name,
+        name: name,
+        type: '原色',
+        note: document.getElementById('customSpriteNote').value
+      });
+      
+      document.getElementById('customSpriteName').value = '';
+      document.getElementById('customSpriteNote').value = '';
+    } else {
+      const typeMap = {
+        '污染': 'pollution',
+        '原色': 'normal',
+        '异色': 'shiny'
+      };
+      fadeData[typeMap[currentFadeType]]++;
+      
+      eventLog.push({
+        spriteName: sprite.name,
+        name: sprite.name,
+        type: currentFadeType,
+        note: ''
+      });
+    }
+    
+    saveData();
+    renderFadeStats();
+    renderEventLog();
+  }
+  
+  function addNewSprite() {
+    const name = document.getElementById('adminName').value.trim();
+    const image = document.getElementById('adminImage').value.trim();
+    const star1 = parseInt(document.getElementById('adminStar1').value) || 0;
+    const star2 = parseInt(document.getElementById('adminStar2').value) || 0;
+    const star3 = parseInt(document.getElementById('adminStar3').value) || 0;
+    const star4 = parseInt(document.getElementById('adminStar4').value) || 0;
+    
+    if (!name) {
+      alert('请输入精灵名称');
+      return;
+    }
+    
+    const newSprite = {
+      id: Date.now().toString(),
+      name: name,
+      image: image || '🐾',
+      stars: [star1, star2, star3, star4]
+    };
+    
+    spriteLibrary.push(newSprite);
+    fadeRecords[newSprite.id] = { pollution: 0, normal: 0, shiny: 0, other: {} };
+    
+    saveData();
+    renderAll();
+    
+    document.getElementById('adminName').value = '';
+    document.getElementById('adminImage').value = '';
+  }
+  
+  function exportBalls() {
+    const filtered = BALL_TYPES.filter(b => selectedBalls.includes(b));
+    let csv = '精灵球种类,刷新数量,刷后数量,消耗\n';
+    let total = 0;
+    filtered.forEach(ball => {
+      const consumed = ballData[ball].before - ballData[ball].after;
+      csv += `${ball},${ballData[ball].before},${ballData[ball].after},${consumed}\n`;
+      total += consumed;
+    });
+    csv += `总消耗,,,${total}\n`;
+    downloadCSV(csv, '精灵球消耗统计.csv');
+  }
+  
+  function exportFade() {
+    const sprite = getCurrentSprite();
+    if (!sprite) {
+      alert('请先选择目标精灵');
+      return;
+    }
+    
+    const fadeData = getCurrentFadeData();
+    let csv = '精灵,类型,精灵名称,数量,备注\n';
+    
+    csv += `${sprite.name},主目标-污染,${sprite.name},${fadeData.pollution},\n`;
+    csv += `${sprite.name},主目标-原色,${sprite.name},${fadeData.normal},\n`;
+    csv += `${sprite.name},主目标-异色,${sprite.name},${fadeData.shiny},\n`;
+    
+    Object.entries(fadeData.other).forEach(([name, data]) => {
+      csv += `${sprite.name},主目标-其它,${name},${data.count},\n`;
+    });
+    
+    downloadCSV(csv, '褪色记录统计.csv');
+  }
+  
+  function downloadCSV(csv, filename) {
+    const blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8;'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+  }
+  
+  function renderAll() {
+    renderSpriteSelector();
+    renderTarget();
+    renderBallFilters();
+    renderBallTable();
+    renderFadeStats();
+    renderEventLog();
+    renderSpriteList();
+  }
+  
+  // ========== 事件绑定 ==========
+  spriteSelect.addEventListener('change', function() {
+    currentSpriteId = this.value || null;
+    saveData();
+    renderTarget();
+    renderFadeStats();
+  });
+  
+  document.getElementById('selectAllBtn').addEventListener('click', () => {
+    selectedBalls = [...BALL_TYPES];
+    renderBallFilters();
+    renderBallTable();
+  });
+  
+  document.getElementById('deselectAllBtn').addEventListener('click', () => {
+    selectedBalls = [];
+    renderBallFilters();
+    renderBallTable();
+  });
+  
+  document.getElementById('resetBallBtn').addEventListener('click', () => {
+    if (confirm('确定将所有精灵球库存重置为0吗？')) {
+      BALL_TYPES.forEach(ball => {
+        ballData[ball] = { before: 0, after: 0 };
+      });
+      saveData();
+      renderBallTable();
+    }
+  });
+  
+  document.querySelectorAll('.fade-type-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.fade-type-btn').forEach(b => b.classList.remove('selected'));
+      this.classList.add('selected');
+      currentFadeType = this.dataset.type;
+      
+      customSpriteInput.style.display = currentFadeType === '其它' ? 'block' : 'none';
+    });
+  });
+  
+  document.getElementById('addFadeRecordBtn').addEventListener('click', addFadeRecord);
+  
+  document.getElementById('resetTargetBtn').addEventListener('click', () => {
+    if (!currentSpriteId) {
+      alert('请先选择目标精灵');
+      return;
+    }
+    if (confirm('确定重置当前精灵的褪色计数吗？')) {
+      fadeRecords[currentSpriteId] = { pollution: 0, normal: 0, shiny: 0, other: {} };
+      saveData();
+      renderFadeStats();
+    }
+  });
+  
+  document.getElementById('clearEventsBtn').addEventListener('click', () => {
+    if (confirm('确定清空所有事件记录吗？')) {
+      eventLog = [];
+      saveData();
+      renderEventLog();
+    }
+  });
+  
+  document.getElementById('toggleAdminBtn').addEventListener('click', () => {
+    adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
+    if (adminPanel.style.display === 'block') {
+      renderSpriteList();
+    }
+  });
+  
+  document.getElementById('addSpriteBtn').addEventListener('click', addNewSprite);
+  
+  document.getElementById('exportBallsBtn').addEventListener('click', exportBalls);
+  document.getElementById('exportFadeBtn').addEventListener('click', exportFade);
+  
+  // 初始化
+  initData();
+  renderAll();
+  
+})();
+</script>
+</body>
+</html>
